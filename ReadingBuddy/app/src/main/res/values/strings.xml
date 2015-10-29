@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Reading Buddy</string>
     <string name="action_settings">Settings</string>
+    <string name="camera_permission_dialog_title">Requesting Access to Camera</string>
+    <string name="camera_permission_dialog_message">This app requires access to your camera in\
+        order to help you read. Please accept the access request.
+    </string>
 </resources>

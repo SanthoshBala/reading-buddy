@@ -1,24 +1,29 @@
 package com.santhoshbala.readingbuddy;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.jar.Manifest;
 
 public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static int PERMISSIONS_REQUEST_ACCESS_CAMERA;
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -42,9 +47,20 @@ public class MainActivity extends AppCompatActivity {
                 if(ContextCompat.checkSelfPermission(getApplicationContext(),
                         android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     dispatchTakePictureIntent();
+                    
                 } else {
-                    Snackbar.make(view, "Error: No camera permission.", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                            android.Manifest.permission.CAMERA)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage(R.string.camera_permission_dialog_message)
+                                .setTitle(R.string.camera_permission_dialog_title);
+
+                        AlertDialog dialog = builder.create();
+                    } else {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{android.Manifest.permission.CAMERA},
+                                PERMISSIONS_REQUEST_ACCESS_CAMERA);
+                    }
                 }
             }
         });
