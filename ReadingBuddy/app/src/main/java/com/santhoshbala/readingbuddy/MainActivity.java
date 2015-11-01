@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
@@ -15,13 +16,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.CharacterStyle;
+import android.text.style.StyleSpan;
+import android.view.ActionMode;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +52,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class ReadTextCallback implements ActionMode.Callback {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_menu, menu);
+            menu.removeItem(android.R.id.selectAll);
+            menu.removeItem(android.R.id.copy);
+            return true;
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            EditText et = (EditText) findViewById(R.id.textView);
+            CharacterStyle cs;
+
+            int start = et.getSelectionStart();
+            int end = et.getSelectionEnd();
+            SpannableStringBuilder ssb = new SpannableStringBuilder(et.getText());
+
+            switch(item.getItemId()) {
+                case R.id.read:
+                    readSelectedEditText();
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    }
+
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -52,6 +99,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void readTextAsSpeech(CharSequence text) {
         this.tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, (String) text);
+    }
+
+    private void readSelectedEditText() {
+        EditText et = (EditText) findViewById(R.id.textView);
+
+        int startSelection = et.getSelectionStart();
+        int endSelection = et.getSelectionEnd();
+
+        String selectedText = et.getText().toString().substring(startSelection, endSelection);
+
+        readTextAsSpeech(selectedText);
     }
 
     private void initializeFab() {
@@ -82,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeWebView() {
-        WebView webView = (WebView) findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl("https://80000hours.org/career-guide/basics/");
-    }
+//    private void initializeWebView() {
+//        WebView webView = (WebView) findViewById(R.id.webView);
+//        webView.getSettings().setJavaScriptEnabled(true);
+//        webView.setWebViewClient(new WebViewClient());
+//        webView.loadUrl("https://80000hours.org/career-guide/basics/");
+//    }
 
     private void initializeTTSEngine() {
         TTSInitListener initListener = new TTSInitListener();
@@ -101,13 +159,41 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeWebView();
+//        initializeWebView();
 
         initializeFab();
 
         initializeTTSEngine();
 
+        EditText et = (EditText) findViewById(R.id.textView);
+        et.setCustomSelectionActionModeCallback(new ReadTextCallback());
+
         readTextAsSpeech("Hello, Reading Buddy!");
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)
+            item.getMenuInfo();
+
+        switch (item.getItemId()) {
+            case R.id.read:
+                readSelectedEditText();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+
+
     }
 
     @Override

@@ -10,11 +10,15 @@
     tools:showIn="@layout/activity_main" tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <WebView
-        android:layout_width="match_parent"
+    <EditText android:text="@string/gettysburg_text" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/webView"
+        android:textIsSelectable="true"
+        android:id="@+id/textView" />
 
-        ></WebView>
+    <!--<WebView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/webView"-->
+        <!--></WebView>-->
 
 </LinearLayout>
