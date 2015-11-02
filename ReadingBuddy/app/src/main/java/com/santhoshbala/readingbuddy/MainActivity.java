@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
             inflater.inflate(R.menu.context_menu, menu);
             menu.removeItem(android.R.id.selectAll);
             menu.removeItem(android.R.id.copy);
+
+            readSelectedEditText();
+
             return true;
         }
 
