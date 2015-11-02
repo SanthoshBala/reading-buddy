@@ -20,6 +20,7 @@ import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -48,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     private class TTSInitListener implements OnInitListener {
         public void onInit(int status) {
+            Log.d("TTS Engine Status", Integer.toString(TTS_ENGINE_STATUS));
             TTS_ENGINE_STATUS = 1;
+            Log.d("TTS Engine Status", Integer.toString(TTS_ENGINE_STATUS));
         }
     }
 
